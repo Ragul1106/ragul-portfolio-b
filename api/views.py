@@ -24,16 +24,24 @@ class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         contact = serializer.save()
+        subject = f"New Contact Form Submission: {contact.subject}"
 
-        subject = f"[Portfolio Contact] {contact.subject}"
-        message = (
-            f"📩 You have received a new portfolio inquiry\n\n"
-            f"👤 Name: {contact.sender_name}\n"
-            f"✉️ Email: {contact.sender_email}\n\n"
-            f"📝 Message:\n{contact.message}\n\n"
-            f"---\n"
-            f"This message was sent via your portfolio contact form."
-        )
+        message = f"""
+        You have received a new message from your portfolio website contact form.
+
+        Sender Details:
+        -----------------------
+        Name: {contact.sender_name}
+        Email: {contact.sender_email}
+
+        Message:
+        -----------------------
+        {contact.message}
+
+        Please respond to the sender promptly. 
+
+        This email was automatically sent via your portfolio contact form.
+        """
 
         try:
             send_mail(

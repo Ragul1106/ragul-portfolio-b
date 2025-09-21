@@ -22,10 +22,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'short_description',
-            'long_description',   # add this
+            'long_description',   
             'image',
             'technologies',
-            'frontend',           # add these fields
+            'frontend',           
             'backend',
             'database',
             'deployment',
