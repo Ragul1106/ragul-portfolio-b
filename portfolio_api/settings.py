@@ -130,7 +130,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    # "https://shopsphere-front.vercel.app",
+    "https://ragul-portfolio-f.vercel.app",
 ]
 
 REST_FRAMEWORK = {
