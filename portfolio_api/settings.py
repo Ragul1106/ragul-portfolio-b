@@ -145,6 +145,9 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER="rockyranjith1121@gmail.com"
 EMAIL_HOST_PASSWORD="rwbvsmjbpobekenf"
+
+SITE_OWNER_NAME = "Ragul R – Full Stack Developer"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

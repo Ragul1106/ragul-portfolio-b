@@ -7,14 +7,17 @@ from rest_framework.decorators import action
 from django.core.mail import send_mail
 from django.conf import settings
 
+
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+
 
 class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.order_by('-created_at')
     serializer_class = ProjectSerializer
     lookup_field = 'id'
+
 
 class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = ContactMessage.objects.all()
@@ -24,8 +27,9 @@ class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         contact = serializer.save()
-        subject = f"New Contact Form Submission: {contact.subject}"
 
+        # Email subject & message for you (site owner)
+        subject = f"New Contact Form Submission: {contact.subject}"
         message = f"""
         You have received a new message from your portfolio website contact form.
 
@@ -38,12 +42,13 @@ class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         -----------------------
         {contact.message}
 
-        Please respond to the sender promptly. 
+        Please respond to the sender promptly.
 
         This email was automatically sent via your portfolio contact form.
         """
 
         try:
+            # Send email to YOU
             send_mail(
                 subject,
                 message,
@@ -51,52 +56,39 @@ class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 [settings.EMAIL_HOST_USER],  
                 fail_silently=False,
             )
+
+            # Send "Thank You" email to the SENDER
+            thank_you_subject = "Thank You for Contacting Me"
+            thank_you_message = f"""
+            Hi {contact.sender_name},
+
+            Thank you for reaching out to me through my portfolio contact form. 
+            I have received your message and will get back to you as soon as possible.
+
+            Here’s a copy of your message for your reference:
+            -----------------------
+            Subject: {contact.subject}
+            Message: {contact.message}
+
+            I truly appreciate you taking the time to connect with me. 
+
+            Best regards,  
+            {getattr(settings, 'SITE_OWNER_NAME', 'Portfolio Owner')}
+            """
+
+            send_mail(
+                thank_you_subject,
+                thank_you_message,
+                settings.DEFAULT_FROM_EMAIL,
+                [contact.sender_email],  
+                fail_silently=False,
+            )
+
         except Exception as e:
-            return Response({"error": f"Email not sent: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": f"Email not sent: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-
-
-
-
-
-# # send email to you
-# subject = f"[Portfolio Contact] {contact.subject}"
-# message = (
-#     f"📩 You have received a new portfolio inquiry\n\n"
-#     f"👤 Name: {contact.sender_name}\n"
-#     f"✉️ Email: {contact.sender_email}\n\n"
-#     f"📝 Message:\n{contact.message}\n\n"
-#     f"---\n"
-#     f"This message was sent via your portfolio contact form."
-# )
-# send_mail(
-#     subject,
-#     message,
-#     settings.EMAIL_HOST_USER,
-#     [settings.EMAIL_HOST_USER],  # your email
-#     fail_silently=False,
-# )
-
-# # auto-reply to sender
-# auto_subject = "✅ Thank you for contacting Ragul's Portfolio"
-# auto_message = (
-#     f"Hello {contact.sender_name},\n\n"
-#     f"Thank you for reaching out through my portfolio. "
-#     f"I have received your message with the subject: \"{contact.subject}\".\n\n"
-#     f"I’ll review your inquiry and get back to you as soon as possible.\n\n"
-#     f"Best regards,\n"
-#     f"Ragul\n"
-#     f"---\n"
-#     f"Portfolio Website: https://your-portfolio-link.com"
-# )
-# send_mail(
-#     auto_subject,
-#     auto_message,
-#     settings.EMAIL_HOST_USER,
-#     [contact.sender_email],  # sender’s email
-#     fail_silently=False,
-# )
