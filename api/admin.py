@@ -1,14 +1,18 @@
 from django.contrib import admin
-from .models import Profile, Project, ContactMessage
+from .models import Profile, Project, ContactMessage, Experience, Education
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('name', 'title')
 
-# @admin.register(Project)
-# class ProjectAdmin(admin.ModelAdmin):
-#     list_display = ('title', 'project_url', 'github_url', 'created_at')
-#     search_fields = ('title', 'technologies')
+
+@admin.register(Experience)
+class ExperienceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'company', 'location', 'start_date', 'end_date')
+
+@admin.register(Education)
+class EducationAdmin(admin.ModelAdmin):
+    list_display = ('level', 'institution', 'course', 'start_year', 'end_year')
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):

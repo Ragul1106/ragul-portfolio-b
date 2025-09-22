@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
-from api.views import ProfileViewSet, ProjectViewSet, ContactViewSet
+from api.views import ProfileViewSet, ProjectViewSet, ContactViewSet, ExperienceViewSet, EducationViewSet
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -25,6 +25,8 @@ router = routers.DefaultRouter()
 router.register(r'profile', ProfileViewSet, basename='profile')
 router.register(r'projects', ProjectViewSet, basename='projects')
 router.register(r'contact', ContactViewSet, basename='contact')
+router.register(r'experiences', ExperienceViewSet, basename='experience')
+router.register(r'education', EducationViewSet, basename='education')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

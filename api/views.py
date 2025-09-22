@@ -1,8 +1,8 @@
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Profile, Project, ContactMessage
-from .serializers import ProfileSerializer, ProjectSerializer, ContactMessageSerializer
+from .models import Profile, Project, ContactMessage, Experience, Education
+from .serializers import ProfileSerializer, ProjectSerializer, ContactMessageSerializer, ExperienceSerializer, EducationSerializer
 from rest_framework.decorators import action
 from django.core.mail import send_mail
 from django.conf import settings
@@ -18,6 +18,14 @@ class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProjectSerializer
     lookup_field = 'id'
 
+class ExperienceViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Experience.objects.all()
+    serializer_class = ExperienceSerializer
+
+
+class EducationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Education.objects.all()
+    serializer_class = EducationSerializer
 
 class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = ContactMessage.objects.all()
@@ -48,7 +56,6 @@ class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         """
 
         try:
-            # Send email to YOU
             send_mail(
                 subject,
                 message,
@@ -57,7 +64,6 @@ class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 fail_silently=False,
             )
 
-            # Send "Thank You" email to the SENDER
             thank_you_subject = "Thank You for Contacting Me"
             thank_you_message = f"""
             Hi {contact.sender_name},
